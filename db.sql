@@ -12,10 +12,10 @@ USE `test_java` ;
 -- Table `test_java`.`prof`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `test_java`.`prof` (
-  `idprof` INT NOT NULL,
+  `idprof` INT NOT NULL AUTOINCREMENT,
   `nomprof` VARCHAR(100) NOT NULL,
   `prenomprof` VARCHAR(100) NOT NULL,
-  `datenaiss` DATE NULL,
+  `datenaiss` VARCHAR(25) NULL,
   `lieunaiss` VARCHAR(100) NULL,
   PRIMARY KEY (`idprof`))
 ENGINE = InnoDB;
@@ -25,12 +25,12 @@ ENGINE = InnoDB;
 -- Table `test_java`.`cours`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `test_java`.`cours` (
-  `idcours` INT NOT NULL,
+  `idcours` INT NOT NULL AUTOINCREMENT,
   `intitule` VARCHAR(200) NOT NULL,
   `duree` VARCHAR(10) NOT NULL,
   `idprof` INT NULL,
   PRIMARY KEY (`idcours`),
-  INDEX `fk_cours_prof_idx` (`idprof` ASC) VISIBLE,
+  INDEX `fk_cours_prof_idx` (`idprof` ASC),
   CONSTRAINT `fk_cours_prof`
     FOREIGN KEY (`idprof`)
     REFERENCES `test_java`.`prof` (`idprof`)

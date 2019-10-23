@@ -12,82 +12,55 @@ import java.io.IOException;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Logger;
+import java.sql.Statement;
+import org.apache.ibatis.jdbc.ScriptRunner;
 
 /**
  *
  * @author noffa
  */
 public class DataAccess {
-    private String dbName, dbUser, dbPass, dbHost, dbServer, dbPort="3306";
-
-    public DataAccess() {
-        dbName = "test_java";
-        dbUser = "root";
-        dbPass = "";
-        dbHost = "localhost";
-        dbServer = "mysql";
-    }
-
-    public DataAccess(String dbName, String dbUser, String dbPass, String dbHost, String dbServer) {
-        this.dbName = dbName;
-        this.dbUser = dbUser;
-        this.dbPass = dbPass;
-        this.dbHost = dbHost;
-        this.dbServer = dbServer;
-    }
+    private static final String DBNAME = "test_java";
+    private static final String DBUSER = "root";
+    private static final String DBPASS = "";
+    private static final String DBHOST = "localhost";
+    private static final String DBSERVER = "mysql";
+    private static final String DBPORT = "3306";
+    private static final String DSN = "jdbc:" + DBSERVER + "://" + DBHOST + ":" + DBPORT + "/" + "?useUnicode=true" +
+        "&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&" +
+        "serverTimezone=UTC";
     
-    public void connect(){
-        try{
-            Class.forName("com.mysql.jdbc.Driver");
-            String dsn = String.join("", "jdbc:", dbServer, "://", dbHost, ":", dbPort, "/", dbName);
-            System.out.println("dsn = " + dsn);
-            Connection con = DriverManager.getConnection(dsn, dbUser, dbPass);
-            Reader reader = new BufferedReader(new FileReader("./db.sql"));
-            
-        } catch(FileNotFoundException | ClassNotFoundException | SQLException e) {
-            System.out.println(e);
+    private static boolean online = false;
+    public static Connection connect() {
+        Connection con = null;
+        try {
+            System.out.println("dsn = " + DSN);
+            Class.forName("com.mysql.cj.jdbc.Driver");  // com.mysql.jdbc.Driver is drepracated.
+            con = DriverManager.getConnection(DSN, DBUSER, DBPASS);
+            Statement stm = con.createStatement();
+            ResultSet rs = stm.executeQuery("SHOW DATABASES LIKE '" + DBNAME + "';");  // Looking if the Schema is already created.
+            if(!rs.next()) {
+                try (Reader reader = new BufferedReader(new FileReader("./db.sql"))) {
+                    System.out.println("Creating the Schema. '" + DBNAME + "'.");
+                    ScriptRunner runner = new ScriptRunner(con);
+                    runner.runScript(reader);
+                }
+            }
+            con.setSchema(DBNAME);  // Setting the DB of the used connection
+            online = true;
+        } catch(FileNotFoundException | ClassNotFoundException | SQLException  e) {
+            System.out.println("exception: " + e.getMessage());
+        } catch (IOException ex) {
+            System.out.println("IOException : " + ex);
+        } finally {
+            if(online){
+                System.out.println("Connection Establish... ");
+            } else {
+                System.out.println("Connection Not Establish");
+            }
         }
-    }
-
-    public String getDbName() {
-        return dbName;
-    }
-
-    public void setDbName(String dbName) {
-        this.dbName = dbName;
-    }
-
-    public String getDbUser() {
-        return dbUser;
-    }
-
-    public void setDbUser(String dbUser) {
-        this.dbUser = dbUser;
-    }
-
-    public String getDbPass() {
-        return dbPass;
-    }
-
-    public void setDbPass(String dbPass) {
-        this.dbPass = dbPass;
-    }
-
-    public String getDbHost() {
-        return dbHost;
-    }
-
-    public void setDbHost(String dbHost) {
-        this.dbHost = dbHost;
-    }
-
-    public String getDbServer() {
-        return dbServer;
-    }
-
-    public void setDbServer(String dbServer) {
-        this.dbServer = dbServer;
+        return con;
     }
 }
