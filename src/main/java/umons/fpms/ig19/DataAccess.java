@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package umons.fmps.ig19;
+package umons.fpms.ig19;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -22,7 +22,7 @@ import org.apache.ibatis.jdbc.ScriptRunner;
  * @author noffa
  */
 public class DataAccess {
-    private static final String DBNAME = "test_java";
+    public static final String DBNAME = "test_java";
     private static final String DBUSER = "root";
     private static final String DBPASS = "";
     private static final String DBHOST = "localhost";
@@ -36,7 +36,6 @@ public class DataAccess {
     public static Connection connect() {
         Connection con = null;
         try {
-            System.out.println("dsn = " + DSN);
             Class.forName("com.mysql.cj.jdbc.Driver");  // com.mysql.jdbc.Driver is drepracated.
             con = DriverManager.getConnection(DSN, DBUSER, DBPASS);
             Statement stm = con.createStatement();
@@ -48,17 +47,17 @@ public class DataAccess {
                     runner.runScript(reader);
                 }
             }
-            con.setSchema(DBNAME);  // Setting the DB of the used connection
+            con.setCatalog(DBNAME);  // Setting the DB of the used connection
             online = true;
         } catch(FileNotFoundException | ClassNotFoundException | SQLException  e) {
             System.out.println("exception: " + e.getMessage());
         } catch (IOException ex) {
             System.out.println("IOException : " + ex);
         } finally {
-            if(online){
-                System.out.println("Connection Establish... ");
+            if(online) {
+                System.out.println("Connection Established... ");
             } else {
-                System.out.println("Connection Not Establish");
+                System.out.println("Connection Not Established");
             }
         }
         return con;

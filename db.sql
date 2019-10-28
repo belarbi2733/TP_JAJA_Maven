@@ -12,7 +12,7 @@ USE `test_java` ;
 -- Table `test_java`.`prof`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `test_java`.`prof` (
-  `idprof` INT NOT NULL AUTOINCREMENT,
+  `idprof` INT NOT NULL AUTO_INCREMENT,
   `nomprof` VARCHAR(100) NOT NULL,
   `prenomprof` VARCHAR(100) NOT NULL,
   `datenaiss` VARCHAR(25) NULL,
@@ -25,7 +25,7 @@ ENGINE = InnoDB;
 -- Table `test_java`.`cours`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `test_java`.`cours` (
-  `idcours` INT NOT NULL AUTOINCREMENT,
+  `idcours` INT NOT NULL AUTO_INCREMENT,
   `intitule` VARCHAR(200) NOT NULL,
   `duree` VARCHAR(10) NOT NULL,
   `idprof` INT NULL,

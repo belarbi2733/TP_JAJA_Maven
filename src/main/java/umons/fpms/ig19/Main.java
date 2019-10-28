@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package umons.fmps.ig19;
+package umons.fpms.ig19;
 
 import java.sql.Connection;
 

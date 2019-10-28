@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package umons.fmps.ig19;
+package umons.fpms.ig19;
 
+import java.sql.Connection;
+import java.sql.Statement;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -17,22 +19,33 @@ import org.junit.runners.Suite;
  * @author noffa
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({umons.fmps.ig19.CoursTest.class, umons.fmps.ig19.MainTest.class, umons.fmps.ig19.ProfTest.class, umons.fmps.ig19.DataAccessTest.class})
+@Suite.SuiteClasses({DataAccessTest.class, ProfTest.class, CoursTest.class})
 public class Ig19Suite {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        System.out.println("Suite.BeforeCLass.setUpClass");
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        System.out.println("Suite.AfterClass.tearDownClass");
+        /*try (Connection con = DataAccess.connect()) {
+            try (Statement stm = con.createStatement()) {
+                if(stm.execute("DROP DATABASE " + DataAccess.DBNAME)) {
+                    System.out.println("DATABASE '" + DataAccess.DBNAME + "' was DELETED.");
+                }
+            }
+        }*/
     }
 
     @Before
     public void setUp() throws Exception {
+        System.out.println("Suite.Before.setUp");
     }
 
     @After
     public void tearDown() throws Exception {
+        System.out.println("Suite.After.tearDown");
     }
 }

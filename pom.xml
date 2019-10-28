@@ -5,6 +5,33 @@
     <artifactId>TP_JAVA_Maven</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+    <profiles>
+        <profile>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.0.0-M3</version>
+                        <executions>
+                            <execution>
+                                <id>suite</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <includes>
+                                <include>${runSuite}</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     <dependencies>
         <dependency>
             <groupId>org.apache.ibatis</groupId>
@@ -24,7 +51,7 @@
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
+            <artifactId>junit-jupiter-params</artifactId>
             <version>5.5.2</version>
             <scope>test</scope>
         </dependency>
@@ -33,5 +60,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>12</maven.compiler.source>
         <maven.compiler.target>12</maven.compiler.target>
+        <runSuite>**/umons.fpms.ig19.Ig19Suite.class</runSuite>
     </properties>
 </project>

@@ -3,12 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package umons.fmps.ig19;
+package umons.fpms.ig19;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.sql.Statement;
+import java.util.ArrayList;
+
 
 /**
  *
@@ -25,6 +28,10 @@ public class Prof {
         this.firstname = firstname;
         this.dateNaiss = dateNaiss;
         this.lieuNaiss = lieuNaiss;
+    }
+
+    Prof() {
+        name = firstname = dateNaiss = lieuNaiss = null;
     }
 
     public String getName() {
@@ -68,7 +75,7 @@ public class Prof {
             prstm.setString(3, this.getDateNaiss());
             prstm.setString(4, this.getLieuNaiss());
             if(prstm.execute()){
-                System.out.println("New prof inserted.");
+                System.out.println("Insertion DONE !!!");
             }
             conn.close();
         } catch (SQLException ex) {
@@ -80,13 +87,14 @@ public class Prof {
         Connection conn = DataAccess.connect();
         PreparedStatement prstm;
         try {
-            prstm = conn.prepareStatement("UPDATE prof SET nomprof = ?, prenomprof = ? WHERE idprof = ?;");
+            prstm = conn.prepareStatement("UPDATE prof SET nomprof = ?, prenomprof = ?, datenaiss = ?, lieunaiss = ? WHERE idprof = ?;");
             prstm.setString(1, this.getName());
             prstm.setString(2, this.getFirstname());
-            prstm.setInt(3, id);
-            if(prstm.execute()){
-                System.out.println("A prof updated.");
-            }
+            prstm.setString(3, this.getDateNaiss());
+            prstm.setString(4, this.getLieuNaiss());
+            prstm.setInt(5, id);
+            prstm.executeUpdate();
+            System.out.println("Update DONE !!!");
             conn.close();
         } catch (SQLException ex) {
             System.out.println(ex);
@@ -97,10 +105,10 @@ public class Prof {
         Connection conn = DataAccess.connect();
         PreparedStatement prstm;
         try {
-            prstm = conn.prepareStatement("DELETE prof WHERE idprof = ?;");
+            prstm = conn.prepareStatement("DELETE FROM prof WHERE idprof = ?;");
             prstm.setInt(1, id);
             if(prstm.execute()){
-                System.out.println("A prof deleted.");
+                System.out.println("Delete DONE !!!");
             }
             conn.close();
         } catch (SQLException ex) {
@@ -108,68 +116,89 @@ public class Prof {
         }
     }
     
-    public static Collection<Prof> select() {
+    public static ArrayList<Prof> select() {
         Connection conn = DataAccess.connect();
-        PreparedStatement prstm;
+        Statement stm;
+        String sql = "SELECT * FROM prof;";
+        ArrayList<Prof> result = new ArrayList<Prof>();
         try {
-            prstm = conn.prepareStatement("SELECT * FROM prof;");
-            if(prstm.execute()){
-                System.out.println("All prof selected.");
+            stm = conn.createStatement();
+            try (ResultSet rs = stm.executeQuery(sql)) {
+                while(rs.next()) {
+                    Prof prof = new Prof(rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5));
+                    result.add(prof);
+                }
+                stm.close();
             }
             conn.close();
         } catch (SQLException ex) {
             System.out.println(ex);
         }
-        return null;
+        return result;
     }
     
     public static Prof select(int id) {
         Connection conn = DataAccess.connect();
         PreparedStatement prstm;
+        String sql = "SELECT * FROM prof WHERE idprof = ?;";
+        Prof result = null;
         try {
-            prstm = conn.prepareStatement("SELECT * FROM prof WHERE idprof = ?;");
+            prstm = conn.prepareStatement(sql);
             prstm.setInt(1, id);
-            if(prstm.execute()){
-                System.out.println("A prof selected.");
+            try (ResultSet rs = prstm.executeQuery()) {
+                if(rs.next()){
+                    result = new Prof(rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5));
+                }
+                prstm.close();
             }
             conn.close();
         } catch (SQLException ex) {
             System.out.println(ex);
         }
-        return null;
+        return result;
     }
     
-    public static Collection<Prof> select(String name) {
+    public static ArrayList<Prof> select(String name) {
         Connection conn = DataAccess.connect();
         PreparedStatement prstm;
+        ArrayList<Prof> result = new ArrayList<Prof>();
         try {
             prstm = conn.prepareStatement("SELECT * FROM prof WHERE nomprof = ?;");
             prstm.setString(1, name);
-            if(prstm.execute()){
-                System.out.println("A prof selected.");
+            try (ResultSet rs = prstm.executeQuery()) {
+                while(rs.next()){
+                    Prof prof = new Prof(rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5));
+                    result.add(prof);
+                }
+                prstm.close();
             }
             conn.close();
         } catch (SQLException ex) {
             System.out.println(ex);
         }
-        return null;
+        return result;
     }
     
-    public Collection<Cours> getListCours() {
+    public ArrayList<Cours> getListCours() {
         Connection conn = DataAccess.connect();
         PreparedStatement prstm;
+        ArrayList<Cours> result = new ArrayList<Cours>();
         try {
-            prstm = conn.prepareStatement("SELECT * FROM cours WHERE nomprof = ? AND prenomprof = ?;");
+            prstm = conn.prepareStatement("SELECT c.* FROM cours c INNER JOIN prof p ON c.idprof = p.idprof AND p.nomprof = ? AND p.prenomprof = ?;");
             prstm.setString(1, this.getName());
             prstm.setString(2, this.getFirstname());
-            if(prstm.execute()){
-                System.out.println("A List of 'Cours' of a 'Prof'.");
+            try (ResultSet rs = prstm.executeQuery()) {
+                while(rs.next()) {
+                    Cours cours = new Cours(rs.getString(2), rs.getString(3), rs.getInt(4));
+                    result.add(cours);
+                }
+                prstm.close();
             }
             conn.close();
         } catch (SQLException ex) {
             System.out.println(ex);
         }
-        return null;
+        return result;
     }
     
     @Override
